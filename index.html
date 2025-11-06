@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advent Calendar</title>
+<style>
+  body {
+    font-family: "Poppins", sans-serif;
+    background: radial-gradient(circle at top, #b30000 0%, #660000 100%);
+    color: #fff;
+    text-align: center;
+    margin: 0;
+    padding: 2rem;
+    background-attachment: fixed;
+    overflow-x: hidden;
+  }
+
+  h1 {
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+  }
+
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    max-width: 700px;
+    margin: 0 auto;
+    z-index: 1;
+    position: relative;
+  }
+
+  .door {
+    background: #d22;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    position: relative;
+    transition: transform 0.3s ease, background 0.3s;
+  }
+
+  .door.locked {
+    background: #555;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  .door:hover:not(.locked) {
+    transform: scale(1.05);
+    background: #e33;
+  }
+
+  .door.opened {
+    background: #080;
+  }
+
+  .content {
+    display: none;
+    margin-top: 1.5rem;
+    font-size: 1.2rem;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Snow canvas */
+  #snow {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<h1>🎄 YouMove Advent Calendar 🎁</h1>
+<p>Click the doors to reveal your daily surprise!</p>
+
+<canvas id="snow"></canvas>
+<div class="calendar" id="calendar"></div>
+<div class="content" id="contentBox"></div>
+
+<script>
+  // 🧪 TEST MODE — unlock all doors for preview (set to false in December)
+  const TEST_MODE = true;
+
+  // 🎁 Messages for each day
+  const messages = [
+    "Dec 1 – Kick off the season with hot cocoa! ☕",
+    "Dec 2 – Watch your favorite holiday movie! 🎬",
+    "Dec 3 – Send a kind message to a friend 💌",
+    "Dec 4 – Make paper snowflakes ❄️",
+    "Dec 5 – Listen to festive music 🎶",
+    "Dec 6 – Decorate your space 🎄",
+    "Dec 7 – Bake cookies 🍪",
+    "Dec 8 – Wrap some gifts 🎁",
+    "Dec 9 – Go for a winter walk 🚶‍♀️",
+    "Dec 10 – Donate to a cause you care about ❤️",
+    "Dec 11 – Read by candlelight 🕯️",
+    "Dec 12 – Make a new holiday playlist 🎧",
+    "Dec 13 – Try a new recipe 🍲",
+    "Dec 14 – Call someone you love 📞",
+    "Dec 15 – Do something creative ✨",
+    "Dec 16 – Have a pajama day 💤",
+    "Dec 17 – Write down 3 things you’re grateful for 🙏",
+    "Dec 18 – Enjoy a festive drink 🍷",
+    "Dec 19 – Watch the stars 🌟",
+    "Dec 20 – Play a board game 🎲",
+    "Dec 21 – Light a candle for warmth 🕯️",
+    "Dec 22 – Sing along to carols 🎤",
+    "Dec 23 – Prepare a special treat 🍰",
+    "Dec 24 – Merry Christmas Eve! 🎅"
+  ];
+
+  const calendar = document.getElementById("calendar");
+  const contentBox = document.getElementById("contentBox");
+
+  const today = new Date();
+  const month = today.getMonth();
+  const day = today.getDate();
+
+  // Load saved opened doors from localStorage
+  const openedDoors = JSON.parse(localStorage.getItem('openedDoors') || '[]');
+
+  for (let i = 1; i <= 24; i++) {
+    const door = document.createElement("div");
+    door.classList.add("door");
+    door.textContent = i;
+
+    // Determine if the door is locked
+    if (!TEST_MODE && !(month === 11 && day >= i)) {
+      door.classList.add("locked");
+    }
+
+    // Mark doors that were previously opened
+    if (openedDoors.includes(i)) {
+      door.classList.add("opened");
+    }
+
+    // Handle door click
+    door.addEventListener("click", () => {
+      if (door.classList.contains("locked")) return;
+
+      // Open door and save state
+      door.classList.add("opened");
+      if (!openedDoors.includes(i)) {
+        openedDoors.push(i);
+        localStorage.setItem('openedDoors', JSON.stringify(openedDoors));
+      }
+
+      // Show message
+      contentBox.innerHTML = `<strong>Day ${i}:</strong> ${messages[i - 1]}`;
+      contentBox.style.display = "block";
+    });
+
+    calendar.appendChild(door);
+  }
+
+  // ❄️ Snow animation
+  const canvas = document.getElementById('snow');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  let flakes = Array.from({length: 100}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 4 + 1,
+    d: Math.random() + 1
+  }));
+
+  function drawFlakes() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    for (let f of flakes) {
+      ctx.moveTo(f.x, f.y);
+      ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
+    }
+    ctx.fill();
+    moveFlakes();
+  }
+
+  let angle = 0;
+  function moveFlakes() {
+    angle += 0.01;
+    for (let f of flakes) {
+      f.y += Math.pow(f.d, 2) + 1;
+      f.x += Math.sin(angle) * 2;
+      if (f.y > canvas.height) {
+        f.y = 0;
+        f.x = Math.random() * canvas.width;
+      }
+    }
+  }
+
+  setInterval(drawFlakes, 25);
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+</script>
+
+</body>
+</html>
