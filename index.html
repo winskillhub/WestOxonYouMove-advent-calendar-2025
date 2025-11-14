@@ -74,7 +74,71 @@
     margin-right: auto;
   }
 
-  /* Snow canvas */
+  #resetBtn {
+    margin-top: 1.5rem;
+    background: #fff;
+    color: #b30000;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  #resetBtn:hover {
+    background: #fdd;
+  }
+
+  .popup {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    animation: fadeIn 0.5s ease forwards;
+  }
+
+  .popup-content {
+    background: #fff;
+    color: #b30000;
+    padding: 2rem;
+    border-radius: 12px;
+    font-size: 1.6rem;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(255,255,255,0.4);
+    animation: popIn 0.6s ease;
+  }
+
+  .popup-content button {
+    margin-top: 1rem;
+    background: #b30000;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+
+  .popup-content button:hover {
+    background: #d22;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
   #snow {
     position: fixed;
     top: 0; left: 0;
@@ -82,6 +146,26 @@
     height: 100%;
     z-index: 0;
     pointer-events: none;
+  }
+
+  @media (max-width: 600px) {
+    .calendar {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .door {
+      height: 70px;
+      font-size: 1rem;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .calendar {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .door {
+      height: 65px;
+      font-size: 0.9rem;
+    }
   }
 </style>
 </head>
@@ -93,12 +177,11 @@
 <canvas id="snow"></canvas>
 <div class="calendar" id="calendar"></div>
 <div class="content" id="contentBox"></div>
+<button id="resetBtn">🔁 Reset Calendar</button>
 
 <script>
-  // 🧪 TEST MODE — unlock all doors for preview (set to false in December)
   const TEST_MODE = true;
 
-  // 🎁 Messages for each day
   const messages = [
     "Dec 1 – Kick off the season with hot cocoa! ☕",
     "Dec 2 – Watch your favorite holiday movie! 🎬",
@@ -128,59 +211,90 @@
 
   const calendar = document.getElementById("calendar");
   const contentBox = document.getElementById("contentBox");
-
   const today = new Date();
   const month = today.getMonth();
   const day = today.getDate();
-
-  // Load saved opened doors from localStorage
   const openedDoors = JSON.parse(localStorage.getItem('openedDoors') || '[]');
 
+  // Create doors
   for (let i = 1; i <= 24; i++) {
     const door = document.createElement("div");
     door.classList.add("door");
     door.textContent = i;
 
-    // Determine if the door is locked
     if (!TEST_MODE && !(month === 11 && day >= i)) {
       door.classList.add("locked");
     }
 
-    // Mark doors that were previously opened
     if (openedDoors.includes(i)) {
       door.classList.add("opened");
     }
 
-    // Handle door click
     door.addEventListener("click", () => {
       if (door.classList.contains("locked")) return;
 
-      // Open door and save state
       door.classList.add("opened");
       if (!openedDoors.includes(i)) {
         openedDoors.push(i);
         localStorage.setItem('openedDoors', JSON.stringify(openedDoors));
       }
 
-      // Show message
-      contentBox.innerHTML = `<strong>Day ${i}:</strong> ${messages[i - 1]}`;
+      // ⭐ Custom content for Day 1 including image
+      if (i === 1) {
+        contentBox.innerHTML = `
+          <strong>Day 1:</strong> ${messages[0]} <br><br>
+          <img src="leaf%20sculpture.jpg" alt="Day 1 Image"
+               style="max-width: 100%; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+        `;
+      } else {
+        contentBox.innerHTML = `<strong>Day ${i}:</strong> ${messages[i - 1]}`;
+      }
+
       contentBox.style.display = "block";
+
+      if (i === 24) {
+        showChristmasPopup();
+      }
     });
 
     calendar.appendChild(door);
   }
 
-  // ❄️ Snow animation
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    if (confirm("Reset all opened doors?")) {
+      localStorage.removeItem('openedDoors');
+      location.reload();
+    }
+  });
+
+  function showChristmasPopup() {
+    const popup = document.createElement('div');
+    popup.classList.add('popup');
+    popup.innerHTML = `
+      <div class="popup-content">
+        🎄 <strong>Merry Christmas from all at YouMove!</strong> 🎁
+        <br><br>
+        <button id="closePopup">Close</button>
+      </div>
+    `;
+    document.body.appendChild(popup);
+
+    document.getElementById('closePopup').addEventListener('click', () => {
+      popup.remove();
+    });
+  }
+
+  // Snow animation
   const canvas = document.getElementById('snow');
   const ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  let flakes = Array.from({length: 100}, () => ({
+  let flakes = Array.from({length: 120}, () => ({
     x: Math.random() * canvas.width,
     y: Math.random() * canvas.height,
-    r: Math.random() * 4 + 1,
-    d: Math.random() + 1
+    r: Math.random() * 3 + 1,
+    d: Math.random() * 0.5 + 0.5
   }));
 
   function drawFlakes() {
@@ -189,7 +303,7 @@
     ctx.beginPath();
     for (let f of flakes) {
       ctx.moveTo(f.x, f.y);
-      ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
+      ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
     }
     ctx.fill();
     moveFlakes();
@@ -217,3 +331,5 @@
 
 </body>
 </html>
+
+
