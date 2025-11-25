@@ -31,34 +31,58 @@
     position: relative;
   }
 
+  /* 3D Door Styles */
   .door {
-    background: #d22;
-    border: 2px solid #fff;
-    border-radius: 8px;
+    position: relative;
+    perspective: 600px;
     cursor: pointer;
     height: 90px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     font-weight: bold;
     font-size: 1.2rem;
-    position: relative;
-    transition: transform 0.3s ease, background 0.3s;
+    border-radius: 8px;
+    overflow: visible;
   }
 
   .door.locked {
-    background: #555;
     cursor: not-allowed;
     opacity: 0.6;
   }
 
-  .door:hover:not(.locked) {
-    transform: scale(1.05);
-    background: #e33;
+  .door-front, .door-inside {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    border: 2px solid #fff;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backface-visibility: hidden;
+    transition: transform 0.8s ease;
+    transform-origin: left center;
   }
 
-  .door.opened {
+  .door-front {
+    background: #d22;
+    color: #fff;
+    z-index: 2;
+  }
+
+  .door-front:hover:not(.locked) {
+    transform: scale(1.05);
+  }
+
+  .door-inside {
     background: #080;
+    color: #fff;
+    z-index: 1;
+  }
+
+  .door.opened .door-front {
+    transform: rotateY(-120deg);
+    box-shadow: 6px 0 12px rgba(0,0,0,0.4);
   }
 
   .content {
@@ -74,6 +98,7 @@
     margin-right: auto;
   }
 
+  /* Reset button */
   #resetBtn {
     margin-top: 1.5rem;
     background: #fff;
@@ -89,6 +114,7 @@
     background: #fdd;
   }
 
+  /* Overlay popup for Christmas message */
   .popup {
     position: fixed;
     top: 0; left: 0;
@@ -139,6 +165,7 @@
     to { transform: scale(1); opacity: 1; }
   }
 
+  /* Snow canvas */
   #snow {
     position: fixed;
     top: 0; left: 0;
@@ -148,6 +175,7 @@
     pointer-events: none;
   }
 
+  /* Responsive layout */
   @media (max-width: 600px) {
     .calendar {
       grid-template-columns: repeat(4, 1fr);
@@ -157,7 +185,6 @@
       font-size: 1rem;
     }
   }
-
   @media (max-width: 400px) {
     .calendar {
       grid-template-columns: repeat(3, 1fr);
@@ -174,39 +201,43 @@
 <h1>🎄 YouMove Advent Calendar 🎁</h1>
 <p>Click the doors to reveal your daily surprise!</p>
 
+<!-- Public domain Christmas music -->
+<audio id="bgMusic" src="https://www.orangefreesounds.com/wp-content/uploads/2016/07/Carol-of-the-bells.mp3" loop></audio>
+<button id="musicBtn">🎶 Play Christmas Music</button>
+
 <canvas id="snow"></canvas>
 <div class="calendar" id="calendar"></div>
 <div class="content" id="contentBox"></div>
 <button id="resetBtn">🔁 Reset Calendar</button>
 
 <script>
-  const TEST_MODE = true;
+  const TEST_MODE = true; // 🧪 Preview mode
 
   const messages = [
-    "Dec 1 – Kick off the season with hot cocoa! ☕",
-    "Dec 2 – Watch your favorite holiday movie! 🎬",
-    "Dec 3 – Send a kind message to a friend 💌",
-    "Dec 4 – Make paper snowflakes ❄️",
-    "Dec 5 – Listen to festive music 🎶",
-    "Dec 6 – Decorate your space 🎄",
-    "Dec 7 – Bake cookies 🍪",
-    "Dec 8 – Wrap some gifts 🎁",
-    "Dec 9 – Go for a winter walk 🚶‍♀️",
-    "Dec 10 – Donate to a cause you care about ❤️",
-    "Dec 11 – Read by candlelight 🕯️",
-    "Dec 12 – Make a new holiday playlist 🎧",
-    "Dec 13 – Try a new recipe 🍲",
-    "Dec 14 – Call someone you love 📞",
-    "Dec 15 – Do something creative ✨",
-    "Dec 16 – Have a pajama day 💤",
-    "Dec 17 – Write down 3 things you’re grateful for 🙏",
-    "Dec 18 – Enjoy a festive drink 🍷",
-    "Dec 19 – Watch the stars 🌟",
-    "Dec 20 – Play a board game 🎲",
-    "Dec 21 – Light a candle for warmth 🕯️",
-    "Dec 22 – Sing along to carols 🎤",
-    "Dec 23 – Prepare a special treat 🍰",
-    "Dec 24 – Merry Christmas Eve! 🎅"
+    "💃🕺 Advent has begun! Have a Christmas Dance Party. <br> Put on your favourite Christmas songs and dance around the room 💃🕺",
+    "🖍️ Do a Christmas-themed colouring or drawing session 🖍️",
+    "What's your favourite Chrismas Movie? Try and let your family guess it by describing it with Emojis or acting it out. <br> Can you guess ours? 💚👹🎄🎁❌🎅❤️",
+    "💌 Make homemade Christmas cards for an elderly neighbour or a local care home 💌",
+    "🐧❄️ Penguin Waddle Race – Hold a ball or cushion between your knees and race like penguins 🐧❄️",
+    "🎄 Visit your nearest town, and take a picture of the Christmas lights.<br>Send them to YouMove@WestOxon.gov.uk 🎄",
+    "🧘‍♀️ Christmas Yoga – Do simple yoga poses named after Christmas things (tree pose, star pose, reindeer stretch). <br> Be creative, and send a picture to YouMove@WestOxon.gov.uk 🧘‍♀️",
+    "💃🕺 Holiday Freeze Dance – Dance until the music stops; freeze like a snowman! 💃🕺",
+    "🎄🎥 Watch a Christmas Movie. <br> Make it active by doing a 30 second wall squat every 30 minutes! 🎥🎄",
+    "✨ Christmas Glow Walk – Take a walk in the dark with torches or glow sticks and look for stars ✨",
+    "🍪 Bake a Christmas Treat like a cookie or a gingerbread man 🍪 <br> Make it into a competition - who can decorate theirs the best?",
+    "🔍 Christmas Treasure Hunt – Hide a “gold star” or “Santa’s hat” and give clues to find it 🔍",
+    "🤭🎶 Play the Christmas humming game! <br> You hum a Christmas tune and everyone has to guess it. <br> Who's the best at humming in your family? 🤭🎶",
+    "🎅 Play Santa Says! <br> (The rules are the same as Simon says, but it's Christmas!) 🎅",
+    "🎄 Build a Human Christmas Tree – Decorate one family member with tinsel, paper stars, and ribbons. <br> We'd love to see a picture. Send it to YouMove@WestOxon.gov.uk 🎄",
+    "🚶‍♂️ / 🚶‍♀️ Family Winter Walk – Go for a stroll, collect pinecones, and spot robins or holly 🚶‍♂️ / 🚶‍♀️",
+    "🙏 Write down 3 things you’re grateful for this Christmas. <br> Share your list with your family 🙏",
+    "🕺 Make a family holiday TikTok-style dance 🕺",
+    "🎀 Christmas Scavenger Hunt – Get someone to hide ornaments or treats around the house and race to find them 🎀",
+    "🎲 Play a board game together 🎲",
+    "❄️ Make paper snowflakes, paper chains or a popcorn garland and hang them in your house ❄️",
+    "🎤 Sing along to your favourite carol or Christmas song 🎤",
+    "📖 Build a blanket fort and read a Christmas story inside 📖",
+    "🎅 It's Christmas tomorrow! Take a silly or formal picture of your family wearing something Christmassy. <br> It can be an item of clothing, or a Christmas decoration! <br> Send it to YouMove@WestOxon.gov.uk 🎅"
   ];
 
   const calendar = document.getElementById("calendar");
@@ -216,11 +247,28 @@
   const day = today.getDate();
   const openedDoors = JSON.parse(localStorage.getItem('openedDoors') || '[]');
 
-  // Create doors
+  // Music control
+  const bgMusic = document.getElementById("bgMusic");
+  const musicBtn = document.getElementById("musicBtn");
+  musicBtn.addEventListener("click", () => {
+    if (bgMusic.paused) {
+      bgMusic.volume = 0.4;
+      bgMusic.play();
+      musicBtn.textContent = "⏸️ Pause Music";
+    } else {
+      bgMusic.pause();
+      musicBtn.textContent = "🎶 Play Christmas Music";
+    }
+  });
+
+  // Create doors with 3D structure
   for (let i = 1; i <= 24; i++) {
     const door = document.createElement("div");
     door.classList.add("door");
-    door.textContent = i;
+    door.innerHTML = `
+      <div class="door-front"><span>${i}</span></div>
+      <div class="door-inside"></div>
+    `;
 
     if (!TEST_MODE && !(month === 11 && day >= i)) {
       door.classList.add("locked");
@@ -239,27 +287,25 @@
         localStorage.setItem('openedDoors', JSON.stringify(openedDoors));
       }
 
-      // ⭐ Custom content for Day 1 including image
-      if (i === 1) {
-        contentBox.innerHTML = `
-          <strong>Day 1:</strong> ${messages[0]} <br><br>
-          <img src="Leaf%20sculpture.jpg" alt="Day 1 Image"
-               style="max-width: 100%; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
-        `;
-      } else {
-        contentBox.innerHTML = `<strong>Day ${i}:</strong> ${messages[i - 1]}`;
-      }
-
+      contentBox.innerHTML = `<strong>Dec ${i}:</strong> ${messages[i - 1]}`;
       contentBox.style.display = "block";
 
       if (i === 24) {
         showChristmasPopup();
+      }
+
+      // If music hasn't started yet, start it on first door click
+      if (bgMusic.paused) {
+        bgMusic.volume = 0.4;
+        bgMusic.play();
+        musicBtn.textContent = "⏸️ Pause Music";
       }
     });
 
     calendar.appendChild(door);
   }
 
+  // Reset functionality
   document.getElementById("resetBtn").addEventListener("click", () => {
     if (confirm("Reset all opened doors?")) {
       localStorage.removeItem('openedDoors');
@@ -267,6 +313,7 @@
     }
   });
 
+  // Popup overlay function
   function showChristmasPopup() {
     const popup = document.createElement('div');
     popup.classList.add('popup');
@@ -331,6 +378,7 @@
 
 </body>
 </html>
+
 
 
 
