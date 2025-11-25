@@ -31,7 +31,6 @@
     position: relative;
   }
 
-  /* 3D Door Styles */
   .door {
     position: relative;
     perspective: 600px;
@@ -98,7 +97,6 @@
     margin-right: auto;
   }
 
-  /* Reset button */
   #resetBtn {
     margin-top: 1.5rem;
     background: #fff;
@@ -114,58 +112,6 @@
     background: #fdd;
   }
 
-  /* Overlay popup for Christmas message */
-  .popup {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10;
-    animation: fadeIn 0.5s ease forwards;
-  }
-
-  .popup-content {
-    background: #fff;
-    color: #b30000;
-    padding: 2rem;
-    border-radius: 12px;
-    font-size: 1.6rem;
-    text-align: center;
-    box-shadow: 0 0 15px rgba(255,255,255,0.4);
-    animation: popIn 0.6s ease;
-  }
-
-  .popup-content button {
-    margin-top: 1rem;
-    background: #b30000;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.3s;
-  }
-
-  .popup-content button:hover {
-    background: #d22;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  @keyframes popIn {
-    from { transform: scale(0.8); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-  }
-
-  /* Snow canvas */
   #snow {
     position: fixed;
     top: 0; left: 0;
@@ -175,24 +121,13 @@
     pointer-events: none;
   }
 
-  /* Responsive layout */
   @media (max-width: 600px) {
-    .calendar {
-      grid-template-columns: repeat(4, 1fr);
-    }
-    .door {
-      height: 70px;
-      font-size: 1rem;
-    }
+    .calendar { grid-template-columns: repeat(4, 1fr); }
+    .door { height: 70px; font-size: 1rem; }
   }
   @media (max-width: 400px) {
-    .calendar {
-      grid-template-columns: repeat(3, 1fr);
-    }
-    .door {
-      height: 65px;
-      font-size: 0.9rem;
-    }
+    .calendar { grid-template-columns: repeat(3, 1fr); }
+    .door { height: 65px; font-size: 0.9rem; }
   }
 </style>
 </head>
@@ -203,7 +138,6 @@
 </h1>
 <p>Click the doors to reveal your daily surprise!</p>
 
-<!-- Public domain Christmas music -->
 <audio id="bgMusic" src="https://www.orangefreesounds.com/wp-content/uploads/2016/07/Carol-of-the-bells.mp3" loop></audio>
 <button id="musicBtn">🎶 Play Christmas Music</button>
 
@@ -213,7 +147,7 @@
 <button id="resetBtn">🔁 Reset Calendar</button>
 
 <script>
-  const TEST_MODE = true; // 🧪 Preview mode
+const TEST_MODE = true; // Preview mode
 
 const messages = [
   `💃🕺 Advent has begun! Have a Christmas Dance Party. <br> Put on your favourite Christmas songs and dance around the room 💃🕺`,
@@ -239,155 +173,130 @@ const messages = [
   `❄️ Make paper snowflakes, paper chains or a popcorn garland and hang them in your house ❄️`,
   `🎤 Sing along to your favourite carol or Christmas song 🎤`,
   `📖 Build a blanket fort and read a Christmas story inside 📖`,
-
-  // DAY 24 WITH IMAGE
   `🎅 It's Christmas tomorrow! Take a silly or formal picture of your family wearing something Christmassy.<br>
    It can be an item of clothing, or a Christmas decoration!<br>
    Send it to YouMove@WestOxon.gov.uk 🎅<br><br>
-   <img src="https://winskillhub.github.io/WestOxonYouMove-advent-calendar-2025/christmas%20team.jpg"
-        alt="Christmas Team"
-        style="max-width:90%; border-radius:10px; box-shadow:0 0 8px rgba(0,0,0,0.3);">`
+   <img src="Christmas%20team.jpg" alt="Christmas Team"
+   style="max-width:90%; border-radius:10px; box-shadow:0 0 8px rgba(0,0,0,0.3);">
+   <br><br>🎄 <strong>Merry Christmas from WODC Physical Activity Team!</strong><br>
+   We look forward to seeing you in 2026! 🎁`
 ];
 
-  const calendar = document.getElementById("calendar");
-  const contentBox = document.getElementById("contentBox");
-  const today = new Date();
-  const month = today.getMonth();
-  const day = today.getDate();
-  const openedDoors = JSON.parse(localStorage.getItem('openedDoors') || '[]');
+const calendar = document.getElementById("calendar");
+const contentBox = document.getElementById("contentBox");
+const today = new Date();
+const month = today.getMonth();
+const day = today.getDate();
+const openedDoors = JSON.parse(localStorage.getItem('openedDoors') || '[]');
 
-  // Music control
-  const bgMusic = document.getElementById("bgMusic");
-  const musicBtn = document.getElementById("musicBtn");
-  musicBtn.addEventListener("click", () => {
+// Music control
+const bgMusic = document.getElementById("bgMusic");
+const musicBtn = document.getElementById("musicBtn");
+musicBtn.addEventListener("click", () => {
+  if (bgMusic.paused) {
+    bgMusic.volume = 0.4;
+    bgMusic.play();
+    musicBtn.textContent = "⏸️ Pause Music";
+  } else {
+    bgMusic.pause();
+    musicBtn.textContent = "🎶 Play Christmas Music";
+  }
+});
+
+// Create doors
+for (let i = 1; i <= 24; i++) {
+  const door = document.createElement("div");
+  door.classList.add("door");
+  door.innerHTML = `
+    <div class="door-front"><span>${i}</span></div>
+    <div class="door-inside"></div>
+  `;
+
+  if (!TEST_MODE && !(month === 11 && day >= i)) {
+    door.classList.add("locked");
+  }
+
+  if (openedDoors.includes(i)) {
+    door.classList.add("opened");
+  }
+
+  door.addEventListener("click", () => {
+    if (door.classList.contains("locked")) return;
+
+    door.classList.add("opened");
+    if (!openedDoors.includes(i)) {
+      openedDoors.push(i);
+      localStorage.setItem('openedDoors', JSON.stringify(openedDoors));
+    }
+
+    contentBox.innerHTML = `<strong>Dec ${i}:</strong> ${messages[i - 1]}`;
+    contentBox.style.display = "block";
+
     if (bgMusic.paused) {
       bgMusic.volume = 0.4;
       bgMusic.play();
       musicBtn.textContent = "⏸️ Pause Music";
-    } else {
-      bgMusic.pause();
-      musicBtn.textContent = "🎶 Play Christmas Music";
     }
   });
 
-  // Create doors with 3D structure
-  for (let i = 1; i <= 24; i++) {
-    const door = document.createElement("div");
-    door.classList.add("door");
-    door.innerHTML = `
-      <div class="door-front"><span>${i}</span></div>
-      <div class="door-inside"></div>
-    `;
+  calendar.appendChild(door);
+}
 
-    if (!TEST_MODE && !(month === 11 && day >= i)) {
-      door.classList.add("locked");
-    }
-
-    if (openedDoors.includes(i)) {
-      door.classList.add("opened");
-    }
-
-    door.addEventListener("click", () => {
-      if (door.classList.contains("locked")) return;
-
-      door.classList.add("opened");
-      if (!openedDoors.includes(i)) {
-        openedDoors.push(i);
-        localStorage.setItem('openedDoors', JSON.stringify(openedDoors));
-      }
-
-      contentBox.innerHTML = `<strong>Dec ${i}:</strong> ${messages[i - 1]}`;
-      contentBox.style.display = "block";
-
-      if (i === 24) {
-        showChristmasPopup();
-      }
-
-      // If music hasn't started yet, start it on first door click
-      if (bgMusic.paused) {
-        bgMusic.volume = 0.4;
-        bgMusic.play();
-        musicBtn.textContent = "⏸️ Pause Music";
-      }
-    });
-
-    calendar.appendChild(door);
+// Reset button
+document.getElementById("resetBtn").addEventListener("click", () => {
+  if (confirm("Reset all opened doors?")) {
+    localStorage.removeItem('openedDoors');
+    location.reload();
   }
+});
 
-  // Reset functionality
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    if (confirm("Reset all opened doors?")) {
-      localStorage.removeItem('openedDoors');
-      location.reload();
-    }
-  });
+// Snow animation
+const canvas = document.getElementById('snow');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-  // Popup overlay function
-  function showChristmasPopup() {
-    const popup = document.createElement('div');
-    popup.classList.add('popup');
-    popup.innerHTML = `
-      <div class="popup-content">
-        🎄 <strong>Merry Christmas from all at YouMove!</strong> 🎁
-        <br><br>
-        <button id="closePopup">Close</button>
-      </div>
-    `;
-    document.body.appendChild(popup);
+let flakes = Array.from({length: 120}, () => ({
+  x: Math.random() * canvas.width,
+  y: Math.random() * canvas.height,
+  r: Math.random() * 3 + 1,
+  d: Math.random() * 0.5 + 0.5
+}));
 
-    document.getElementById('closePopup').addEventListener('click', () => {
-      popup.remove();
-    });
+function drawFlakes() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "white";
+  ctx.beginPath();
+  for (let f of flakes) {
+    ctx.moveTo(f.x, f.y);
+    ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
   }
+  ctx.fill();
+  moveFlakes();
+}
 
-  // Snow animation
-  const canvas = document.getElementById('snow');
-  const ctx = canvas.getContext('2d');
+let angle = 0;
+function moveFlakes() {
+  angle += 0.01;
+  for (let f of flakes) {
+    f.y += Math.pow(f.d, 2) + 1;
+    f.x += Math.sin(angle) * 2;
+    if (f.y > canvas.height) {
+      f.y = 0;
+      f.x = Math.random() * canvas.width;
+    }
+  }
+}
+
+setInterval(drawFlakes, 25);
+window.addEventListener('resize', () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-
-  let flakes = Array.from({length: 120}, () => ({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    r: Math.random() * 3 + 1,
-    d: Math.random() * 0.5 + 0.5
-  }));
-
-  function drawFlakes() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "white";
-    ctx.beginPath();
-    for (let f of flakes) {
-      ctx.moveTo(f.x, f.y);
-      ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
-    }
-    ctx.fill();
-    moveFlakes();
-  }
-
-  let angle = 0;
-  function moveFlakes() {
-    angle += 0.01;
-    for (let f of flakes) {
-      f.y += Math.pow(f.d, 2) + 1;
-      f.x += Math.sin(angle) * 2;
-      if (f.y > canvas.height) {
-        f.y = 0;
-        f.x = Math.random() * canvas.width;
-      }
-    }
-  }
-
-  setInterval(drawFlakes, 25);
-  window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  });
+});
 </script>
 
 </body>
 </html>
-
 
 
 
