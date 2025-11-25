@@ -215,34 +215,39 @@
 <script>
   const TEST_MODE = true; // 🧪 Preview mode
 
-  const messages = [
-    "💃🕺 Advent has begun! Have a Christmas Dance Party. <br> Put on your favourite Christmas songs and dance around the room 💃🕺",
-    "🖍️ Do a Christmas-themed colouring or drawing session 🖍️",
-    "What's your favourite Chrismas Movie? Try and let your family guess it by describing it with Emojis or acting it out. <br> Can you guess ours? 💚👹🎄🎁❌🎅❤️",
-    "💌 Make homemade Christmas cards for an elderly neighbour or a local care home 💌",
-    "🐧❄️ Penguin Waddle Race – Hold a ball or cushion between your knees and race like penguins 🐧❄️",
-    "🎄 Visit your nearest town, and take a picture of the Christmas lights.<br>Send them to YouMove@WestOxon.gov.uk 🎄",
-    "🧘‍♀️ Christmas Yoga – Do simple yoga poses named after Christmas things (tree pose, star pose, reindeer stretch). <br> Be creative, and send a picture to YouMove@WestOxon.gov.uk 🧘‍♀️",
-    "💃🕺 Holiday Freeze Dance – Dance until the music stops; freeze like a snowman! 💃🕺",
-    "🎄🎥 Watch a Christmas Movie. <br> Make it active by doing a 30 second wall squat every 30 minutes! 🎥🎄",
-    "✨ Christmas Glow Walk – Take a walk in the dark with torches or glow sticks and look for stars ✨",
-    "🍪 Bake a Christmas Treat like a cookie or a gingerbread man 🍪 <br> Make it into a competition - who can decorate theirs the best?",
-    "🔍 Christmas Treasure Hunt – Hide a “gold star” or “Santa’s hat” and give clues to find it 🔍",
-    "🤭🎶 Play the Christmas humming game! <br> You hum a Christmas tune and everyone has to guess it. <br> Who's the best at humming in your family? 🤭🎶",
-    "🎅 Play Santa Says! <br> (The rules are the same as Simon says, but it's Christmas!) 🎅",
-    "🎄 Build a Human Christmas Tree – Decorate one family member with tinsel, paper stars, and ribbons. <br> We'd love to see a picture. Send it to YouMove@WestOxon.gov.uk 🎄",
-    "🚶‍♂️ / 🚶‍♀️ Family Winter Walk – Go for a stroll, collect pinecones, and spot robins or holly 🚶‍♂️ / 🚶‍♀️",
-    "🙏 Write down 3 things you’re grateful for this Christmas. <br> Share your list with your family 🙏",
-    "🕺 Make a family holiday TikTok-style dance 🕺",
-    "🎀 Christmas Scavenger Hunt – Get someone to hide ornaments or treats around the house and race to find them 🎀",
-    "🎲 Play a board game together 🎲",
-    "❄️ Make paper snowflakes, paper chains or a popcorn garland and hang them in your house ❄️",
-    "🎤 Sing along to your favourite carol or Christmas song 🎤",
-    "📖 Build a blanket fort and read a Christmas story inside 📖",
-    "🎅 It's Christmas tomorrow! Take a silly or formal picture of your family wearing something Christmassy.<br> It can be an item of clothing, or a Christmas decoration!<br> Send it to YouMove@WestOxon.gov.uk 🎅<br><br>
-<img src='Christmas team.jpg' alt='Christmas Team'
-style='max-width:90%; border-radius:10px; box-shadow:0 0 8px rgba(0,0,0,0.3);'>"
-  ];
+const messages = [
+  `💃🕺 Advent has begun! Have a Christmas Dance Party. <br> Put on your favourite Christmas songs and dance around the room 💃🕺`,
+  `🖍️ Do a Christmas-themed colouring or drawing session 🖍️`,
+  `What's your favourite Chrismas Movie? Try and let your family guess it by describing it with Emojis or acting it out. <br> Can you guess ours? 💚👹🎄🎁❌🎅❤️`,
+  `💌 Make homemade Christmas cards for an elderly neighbour or a local care home 💌`,
+  `🐧❄️ Penguin Waddle Race – Hold a ball or cushion between your knees and race like penguins 🐧❄️`,
+  `🎄 Visit your nearest town, and take a picture of the Christmas lights.<br>Send them to YouMove@WestOxon.gov.uk 🎄`,
+  `🧘‍♀️ Christmas Yoga – Do simple yoga poses named after Christmas things (tree pose, star pose, reindeer stretch). <br> Be creative, and send a picture to YouMove@WestOxon.gov.uk 🧘‍♀️`,
+  `💃🕺 Holiday Freeze Dance – Dance until the music stops; freeze like a snowman! 💃🕺`,
+  `🎄🎥 Watch a Christmas Movie. <br> Make it active by doing a 30 second wall squat every 30 minutes! 🎥🎄`,
+  `✨ Christmas Glow Walk – Take a walk in the dark with torches or glow sticks and look for stars ✨`,
+  `🍪 Bake a Christmas Treat like a cookie or a gingerbread man 🍪 <br> Make it into a competition - who can decorate theirs the best?`,
+  `🔍 Christmas Treasure Hunt – Hide a “gold star” or “Santa’s hat” and give clues to find it 🔍`,
+  `🤭🎶 Play the Christmas humming game! <br> You hum a Christmas tune and everyone has to guess it. <br> Who's the best at humming in your family? 🤭🎶`,
+  `🎅 Play Santa Says! <br> (The rules are the same as Simon says, but it's Christmas!) 🎅`,
+  `🎄 Build a Human Christmas Tree – Decorate one family member with tinsel, paper stars, and ribbons. <br> We'd love to see a picture. Send it to YouMove@WestOxon.gov.uk 🎄`,
+  `🚶‍♂️ / 🚶‍♀️ Family Winter Walk – Go for a stroll, collect pinecones, and spot robins or holly 🚶‍♂️ / 🚶‍♀️`,
+  `🙏 Write down 3 things you’re grateful for this Christmas. <br> Share your list with your family 🙏`,
+  `🕺 Make a family holiday TikTok-style dance 🕺`,
+  `🎀 Christmas Scavenger Hunt – Get someone to hide ornaments or treats around the house and race to find them 🎀`,
+  `🎲 Play a board game together 🎲`,
+  `❄️ Make paper snowflakes, paper chains or a popcorn garland and hang them in your house ❄️`,
+  `🎤 Sing along to your favourite carol or Christmas song 🎤`,
+  `📖 Build a blanket fort and read a Christmas story inside 📖`,
+
+  // DAY 24 WITH IMAGE FIXED
+  `🎅 It's Christmas tomorrow! Take a silly or formal picture of your family wearing something Christmassy.<br>
+   It can be an item of clothing, or a Christmas decoration!<br>
+   Send it to YouMove@WestOxon.gov.uk 🎅<br><br>
+   <img src="https://youmovewestoxon.github.io/YouMove-Advent-Calendar-2024/Christmas%20team.jpg"
+        alt="Christmas Team"
+        style="max-width:90%; border-radius:10px; box-shadow:0 0 8px rgba(0,0,0,0.3);">`
+];
 
   const calendar = document.getElementById("calendar");
   const contentBox = document.getElementById("contentBox");
@@ -382,6 +387,7 @@ style='max-width:90%; border-radius:10px; box-shadow:0 0 8px rgba(0,0,0,0.3);'>"
 
 </body>
 </html>
+
 
 
 
