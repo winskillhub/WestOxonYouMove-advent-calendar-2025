@@ -147,7 +147,30 @@
 <button id="resetBtn">🔁 Reset Calendar</button>
 
 <script>
-const TEST_MODE = false; // Preview mode
+const TEST_MODE = false;
+
+// ---------------------------
+// DATE OVERRIDE FOR TESTING
+// ---------------------------
+// Set TEST_DATE to simulate any date.
+// months are 0-indexed → 11 = December
+// Example: Pretend it's Dec 10 → { month: 11, day: 10 }
+const TEST_DATE = null;
+// Set to null for normal date behaviour.
+// ---------------------------
+
+
+// --------- GET TODAY'S DATE (WITH OVERRIDE) ----------
+let today = new Date();
+
+if (TEST_DATE) {
+  today = new Date(today.getFullYear(), TEST_DATE.month, TEST_DATE.day);
+}
+
+const month = today.getMonth();
+const day = today.getDate();
+// -----------------------------------------------------
+
 
 const messages = [
   `💃🕺 Advent has begun! Have a Christmas Dance Party. <br> Put on your favourite Christmas songs and dance around the room 💃🕺`,
@@ -184,9 +207,6 @@ const messages = [
 
 const calendar = document.getElementById("calendar");
 const contentBox = document.getElementById("contentBox");
-const today = new Date();
-const month = today.getMonth();
-const day = today.getDate();
 const openedDoors = JSON.parse(localStorage.getItem('openedDoors') || '[]');
 
 // Music control
@@ -212,6 +232,7 @@ for (let i = 1; i <= 24; i++) {
     <div class="door-inside"></div>
   `;
 
+  // Lock doors based on today's (or overridden) date
   if (!TEST_MODE && !(month === 11 && day >= i)) {
     door.classList.add("locked");
   }
@@ -297,4 +318,7 @@ window.addEventListener('resize', () => {
 
 </body>
 </html>
+
+
+
 
